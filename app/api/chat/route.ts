@@ -1,6 +1,7 @@
 
 import { google } from '@ai-sdk/google';
-import { streamText } from 'ai';
+import { streamText, tool } from 'ai';
+import { z } from 'zod';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -10,8 +11,43 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: google('gemini-1.5-flash'),
-    system: 'You only answer in english slang',
+    system: 'You only answer in slang based on the language of the user\'s prompt',
     messages,
+    tools: {
+      weather: tool({
+        description: 'Get the weather in a location (farenheit)',
+        parameters: z.object({
+          location: z.string().describe('The location to get the weather for'),
+        }),
+        execute: async ({ location }) => {
+          const temperature = Math.round(Math.random() * (90 - 32) + 32);
+          return {
+            location,
+            temperature,
+          };
+        },
+      }),
+      convertFarenheitToCelsius: tool({
+        description: 'Convert a temperature in farenheit to celsius',
+        parameters: z.object({
+          temperature: z
+            .number()
+            .describe('The temperature in farenheit to convert'),
+        }),
+        execute: async ({ temperature }) => {
+          const celsius = Math.round((temperature - 32) * (5 / 9));
+          return {
+            celsius,
+          };
+        },
+      }),
+      astronomyPictureOfTheDay: tool({
+        description: 'Send a picture of NASA\'s astronomy picture of the day',
+        parameters: z.object({
+          date: z.string().describe(`The date of the requested picture. Default is ${Date.now().toLocaleString()}, you must convert the date to YYYY-MM-DD format.`),
+        }),
+      }),
+    }
   });
 
   return result.toDataStreamResponse();
