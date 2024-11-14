@@ -1,7 +1,12 @@
-
 import { google } from '@ai-sdk/google';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
+
+function getYesterdayDate(): string {
+  const today: Date = new Date();
+  today.setDate(today.getDate() - 1);
+  return today.toISOString().split('T')[0];
+}
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -11,7 +16,7 @@ export async function POST(req: Request) {
 
   const result = await streamText({
     model: google('gemini-1.5-flash'),
-    system: 'You only answer in slang based on the language of the user\'s prompt',
+    system: 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy. You can still add your knowledge on everything, not just on astronomy.',
     messages,
     tools: {
       weather: tool({
@@ -42,9 +47,9 @@ export async function POST(req: Request) {
         },
       }),
       astronomyPictureOfTheDay: tool({
-        description: 'Send a picture of NASA\'s astronomy picture of the day',
+        description: 'Send a picture of NASA\'s astronomy picture of the day, tell me the explanation and add some funny comment on the picture.',
         parameters: z.object({
-          date: z.string().describe(`The date of the requested picture. Default is ${Date.now().toLocaleString()}, you must convert the date to YYYY-MM-DD format.`),
+          date: z.string().describe(`The date of the requested picture. The default date is yesterday which is ${getYesterdayDate()}, you must convert the date to YYYY-MM-DD format.`),
         }),
       }),
     }

@@ -13,7 +13,8 @@ export default {
         foreground: "var(--foreground)",
       },
       fontFamily: {
-        space: ['"Space Mono"', 'monospace']
+        space: ['"Space Mono"', 'monospace'],
+        lato: ['"Lato"', 'sans-serif']
       }
     },
   },

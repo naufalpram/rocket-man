@@ -20,26 +20,48 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-.chat-room {
-  /* width */
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-  
-  /* Track */
-  &::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
-  /* Handle */
-  &::-webkit-scrollbar-thumb {
-    background: #888;
-    border-radius: 4px;
-  }
-  
-  /* Handle on hover */
-  &::-webkit-scrollbar-thumb:hover {
-    background: #555;
+@layer components {
+  .chat-room {
+    /* width */
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+    
+    /* Track */
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    
+    /* Handle */
+    &::-webkit-scrollbar-thumb {
+      background: #888;
+      border-radius: 4px;
+    }
+    
+    /* Handle on hover */
+    &::-webkit-scrollbar-thumb:hover {
+      background: #555;
+    }
+
+    .chat-bubble {
+      @apply min-w-40;
+      .role-pill {
+        @apply text-lg;
+      }
+      &.assistant {
+        @apply bg-[#232037] text-white self-start;
+        .role-pill {
+          @apply text-[#fe754d] font-bold
+        }
+      }
+
+      &.user {
+        @apply bg-[#fe754d] text-white self-end;
+        .role-pill {
+          @apply text-[#232037] font-bold;
+        }
+      }
+    }    
   }
 }
 
