@@ -27,6 +27,8 @@ const ResultParser = ({
         default:
           return null;
       }
+    } else if (toolInvocation.state === 'call' || toolInvocation.state === 'partial-call') {
+      return 'Getting there...'
     }
     return 'Nothin\' to see here, bro'
   }
