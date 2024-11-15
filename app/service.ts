@@ -1,11 +1,11 @@
 import axios from "axios";
 
-const baseURL = process.env.NEXT_PUBLIC_NASA_API_URL;
+const baseURL = process.env.NASA_API_URL;
 
 const instance = axios.create({
     baseURL: baseURL,
     params: {
-        api_key: process.env.NEXT_PUBLIC_NASA_API_KEY
+        api_key: process.env.NASA_API_KEY
     }
 });
 

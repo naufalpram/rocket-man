@@ -4,7 +4,6 @@ import { useChat } from 'ai/react';
 import Image from "next/image";
 import { useRef } from 'react';
 import Markdown from 'react-markdown';
-import Services from '@/app/service';
 import APODResult from './components/multi-modal-result/Apod';
 import Link from 'next/link';
 
@@ -49,22 +48,9 @@ const ResultParser = ({
 
 export default function Home() {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading, addToolResult } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: 'api/chat',
     maxSteps: 5,
-    async onToolCall({ toolCall }) {
-      if (toolCall.toolName === 'astronomyPictureOfTheDay') {
-        const arg = toolCall.args as { date: string };
-        Services.get(`/planetary/apod?date=${arg.date}`)
-        .then((response) => {
-          if (response.status === 200) {
-            addToolResult({ toolCallId: toolCall.toolCallId, result: response.data });
-          }
-        }).catch((error) => {
-          addToolResult({ toolCallId: toolCall.toolCallId, result: error });
-        })
-      }
-    },
   });
 
   return (

@@ -1,12 +1,7 @@
 import { google } from '@ai-sdk/google';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
-
-function getYesterdayDate(): string {
-  const today: Date = new Date();
-  today.setDate(today.getDate() - 1);
-  return today.toISOString().split('T')[0];
-}
+import { fetchAPOD } from './nasa-api';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -46,12 +41,7 @@ export async function POST(req: Request) {
           };
         },
       }),
-      astronomyPictureOfTheDay: tool({
-        description: 'Send a picture of NASA\'s astronomy picture of the day, tell me the explanation and add some funny comment on the picture.',
-        parameters: z.object({
-          date: z.string().describe(`The date of the requested picture. The default date is yesterday which is ${getYesterdayDate()}, you must convert the date to YYYY-MM-DD format.`),
-        }),
-      }),
+      astronomyPictureOfTheDay: fetchAPOD
     }
   });
 
