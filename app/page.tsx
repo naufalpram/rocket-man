@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useRef } from 'react';
 import Markdown from 'react-markdown';
 import APODResult from './components/multi-modal-result/Apod';
+import EONETResult from './components/multi-modal-result/EONET';
 import Link from 'next/link';
 
 const ResultParser = ({
@@ -23,6 +24,8 @@ const ResultParser = ({
       switch (toolInvocation.toolName) {
         case 'astronomyPictureOfTheDay':
           return <APODResult key={toolInvocation.toolCallId} result={toolInvocation.result} />
+        case 'naturalEventsShowcase':
+          return <EONETResult key={toolInvocation.toolCallId} result={toolInvocation.result} />
         default:
           return null;
       }
@@ -51,6 +54,11 @@ export default function Home() {
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: 'api/chat',
     maxSteps: 5,
+    async onToolCall({ toolCall }) {
+      if (toolCall.toolName === 'getNaturalEventType') {
+        return { eventType: 'wildfires' };
+      }
+    }
   });
 
   return (
