@@ -3,14 +3,14 @@ import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import ThreeGlobe from 'three-globe';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
-import { GlobeData } from '@/types/globe';
+import { GlobeData, GlobeDataArrayResponse } from '@/types/globe';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import CloseIcon from '@/public/close-icon.svg';
 import { Message } from 'ai';
 import Markdown from 'react-markdown';
 
-export default function EONET({ result, message }: { result: Array<GlobeData>, message: Message }) {
+export default function EONET({ result, message }: { result: GlobeDataArrayResponse, message: Message }) {
     const [showModal, setShowModal] = useState(false);
 
     function handleToggleModal() {
@@ -23,7 +23,7 @@ export default function EONET({ result, message }: { result: Array<GlobeData>, m
         <div className='w-full h-full bg-[#16132b] p-4 flex items-center cursor-pointer' onClick={handleToggleModal}>
             <h4 className='font-semibold text-lg text-white'>Click here to see the 3D visualization</h4>
         </div>
-        <Globe result={result} showModal={showModal} toggleModal={handleToggleModal} />
+        <Globe result={result.data} showModal={showModal} toggleModal={handleToggleModal} />
         </>
     )
 }

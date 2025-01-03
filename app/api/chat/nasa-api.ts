@@ -3,7 +3,7 @@ import { tool } from "ai";
 import Services from '@/app/service';
 import { getYesterdayDate } from '@/app/helper';
 import { APODResponse, EONETEvent, EONETResponse } from "@/types/nasa-api";
-import { GlobeData } from '@/types/globe';
+import { GlobeDataArrayResponse } from '@/types/globe';
 
 const EONET_URL = 'https://eonet.gsfc.nasa.gov';
 
@@ -36,20 +36,22 @@ const fetchEONET = tool({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
     eventType: z.string().describe('The type of the natural event')
   }),
-  execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<Array<GlobeData>>  => {
+  execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<GlobeDataArrayResponse>  => {
     const response = await Services.get(`${EONET_URL}/api/v2.1/events?limit=10&days=${days}&status=open`);
     const rawData = response.data as EONETResponse;
-    const filteredData: Array<GlobeData> = rawData.events.filter((event: EONETEvent) => event.categories[0].title.toLowerCase() === eventType.toLowerCase())
-        .map((data: EONETEvent) => ({
-          lat: data.geometries[data.geometries.length - 1].coordinates[1],
-          lng: data.geometries[data.geometries.length - 1].coordinates[0],
-          size: 1,
-          color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)],
-          title: data.title,
-          maxR: Math.random() * 20 + 3,
-          propagationSpeed: 10,
-          repeatPeriod: 2000
-      }));
+    const filteredData: GlobeDataArrayResponse = {
+      data: rawData.events.filter((event: EONETEvent) => event.categories[0].title.toLowerCase() === eventType.toLowerCase())
+            .map((data: EONETEvent) => ({
+              lat: data.geometries[data.geometries.length - 1].coordinates[1],
+              lng: data.geometries[data.geometries.length - 1].coordinates[0],
+              size: 1,
+              color: ['red', 'white', 'blue', 'green'][Math.round(Math.random() * 3)],
+              title: data.title,
+              maxR: Math.random() * 20 + 3,
+              propagationSpeed: 10,
+              repeatPeriod: 2000
+          }))
+    }
     return filteredData;
   }
 })

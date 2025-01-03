@@ -8,3 +8,7 @@ export type GlobeData = {
     propagationSpeed: number,
     repeatPeriod: number
 }
+
+export type GlobeDataArrayResponse = {
+    data: Array<GlobeData>
+}
