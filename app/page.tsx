@@ -4,8 +4,8 @@ import { useChat } from 'ai/react';
 import Image from "next/image";
 import { useRef } from 'react';
 import Markdown from 'react-markdown';
-import APODResult from './components/multi-modal-result/Apod';
-import EONETResult from './components/multi-modal-result/EONET';
+import APODResult from './components/multi-modal-bubble/Apod';
+import EONETResult from './components/multi-modal-bubble/EONET';
 import Link from 'next/link';
 
 const ResultParser = ({
@@ -19,13 +19,13 @@ const ResultParser = ({
   message: Message,
   isLoading: boolean
 }) => {
-  const MultiModalResult = ({ toolInvocation }: { toolInvocation: ToolInvocation }) => {
+  const MultiModalResult = ({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
     if ('result' in toolInvocation) {
       switch (toolInvocation.toolName) {
         case 'astronomyPictureOfTheDay':
           return <APODResult key={toolInvocation.toolCallId} result={toolInvocation.result} />
         case 'naturalEventsShowcase':
-          return <EONETResult key={toolInvocation.toolCallId} result={toolInvocation.result} />
+          return <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />
         default:
           return null;
       }
@@ -40,7 +40,7 @@ const ResultParser = ({
         <div className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</div>
         {message.toolInvocations ? (
           message.toolInvocations?.map((toolInvocation: ToolInvocation) => (
-            <MultiModalResult key={toolInvocation.toolCallId} toolInvocation={toolInvocation} />
+            <MultiModalResult key={toolInvocation.toolCallId} message={message} toolInvocation={toolInvocation} />
           ))
         ) : (<Markdown>{message.content}</Markdown>)}
       </div>

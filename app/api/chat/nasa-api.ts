@@ -26,12 +26,12 @@ const fetchAPOD = tool({
 });
 
 const getNaturalEventType = tool({
-  description: 'Ask the user to select which natural events the user want to choose.',
+  description: 'Ask the user to select which natural events the user want to choose between given options.',
   parameters: z.object({})
 })
 
 const fetchEONET = tool({
-  description: 'Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Always ask user to select the natural event type before using this tool. After showing the result, end it with a variations of "Check out this globe visualization!"',
+  description: 'Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Always ask user to select the natural event type before using this tool. End it with a variations of "Check out this globe visualization!" and no need to use previous the visualization context.',
   parameters: z.object({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
     eventType: z.string().describe('The type of the natural event')
