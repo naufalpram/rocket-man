@@ -4,6 +4,7 @@ import Services from '@/app/service';
 import { getYesterdayDate } from '@/app/helper';
 import { APODResponse, EONETEvent, EONETResponse } from "@/types/nasa-api";
 import { GlobeDataArrayResponse } from '@/types/globe';
+import { NATURAL_EVENTS } from '@/app/helper/constant';
 
 const EONET_URL = 'https://eonet.gsfc.nasa.gov';
 
@@ -26,15 +27,18 @@ const fetchAPOD = tool({
 });
 
 const getNaturalEventType = tool({
-  description: 'Ask the user to select which natural events the user want to choose between given options.',
-  parameters: z.object({})
+  description: 'Ask the user to select which natural event type the user want to choose between given options.',
+  parameters: z.object({
+    message: z.string().describe('The message to ask the user for selecting a natural event type')
+  })
 })
 
 const fetchEONET = tool({
-  description: 'Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Always ask user to select the natural event type before using this tool. End it with a variations of "Check out this globe visualization!" and no need to use previous the visualization context.',
+  description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user.
+  Always ask user to select the natural event type before using this tool. End it with your witty analysis on the data`,
   parameters: z.object({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
-    eventType: z.string().describe('The type of the natural event')
+    eventType: z.string().describe(`The type of the natural event from this data and only show the labels: ${JSON.stringify(NATURAL_EVENTS)}`)
   }),
   execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<GlobeDataArrayResponse>  => {
     const response = await Services.get(`${EONET_URL}/api/v2.1/events?limit=10&days=${days}&status=open`);

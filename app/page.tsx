@@ -20,18 +20,21 @@ const ResultParser = ({
   isLoading: boolean
 }) => {
   const MultiModalResult = ({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
-    if ('result' in toolInvocation) {
+
+    if (toolInvocation) {
+      const isResult = 'result' in toolInvocation;
+      if (toolInvocation.state === 'call' || toolInvocation.state === 'partial-call') {
+        return 'Getting there...'
+      }
       switch (toolInvocation.toolName) {
         case 'astronomyPictureOfTheDay':
-          return <APODResult key={toolInvocation.toolCallId} result={toolInvocation.result} />
+          return isResult ? <APODResult key={toolInvocation.toolCallId} result={toolInvocation.result} /> : null;
         case 'naturalEventsShowcase':
-          return <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />
+          return isResult ? <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} /> : null
         default:
           return null;
       }
-    } else if (toolInvocation.state === 'call' || toolInvocation.state === 'partial-call') {
-      return 'Getting there...'
-    }
+    } 
     return 'Nothin\' to see here, bro'
   }
   return (
@@ -53,12 +56,7 @@ export default function Home() {
   const promptRef = useRef<HTMLInputElement>(null);
   const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
     api: 'api/chat',
-    maxSteps: 5,
-    async onToolCall({ toolCall }) {
-      if (toolCall.toolName === 'getNaturalEventType') {
-        return { eventType: 'wildfires' };
-      }
-    }
+    maxSteps: 5
   });
 
   return (

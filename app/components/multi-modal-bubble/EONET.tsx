@@ -16,16 +16,19 @@ export default function EONET({ result, message }: { result: GlobeDataArrayRespo
     function handleToggleModal() {
         setShowModal(prev => !prev)
     }
-
     return (
         <>
         <Markdown>{message.content}</Markdown>
-        <div className='w-full h-full bg-[#16132b] p-4 flex items-center cursor-pointer' onClick={handleToggleModal}>
-            <h4 className='font-semibold text-lg text-white'>Click here to see the 3D visualization</h4>
-        </div>
-        <Globe result={result.data} showModal={showModal} toggleModal={handleToggleModal} />
+        {result?.data && result.data.length > 0 && (
+            <>
+            <div className='w-full h-full bg-[#16132b] p-4 flex items-center cursor-pointer' onClick={handleToggleModal}>
+                <h4 className='font-semibold text-lg text-white'>Click here to see the 3D visualization</h4>
+            </div>
+            <Globe result={result.data} showModal={showModal} toggleModal={handleToggleModal} />
+            </>
+        )}
         </>
-    )
+    );
 }
 
 function Globe({ result, showModal, toggleModal }: { result: Array<GlobeData>, showModal: boolean, toggleModal: () => void }) {
