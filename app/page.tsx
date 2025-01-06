@@ -2,7 +2,7 @@
 import { Message, ToolInvocation } from 'ai';
 import { useChat } from 'ai/react';
 import Image from "next/image";
-import { useCallback, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import APODResult from './components/multi-modal-bubble/Apod';
 import EONETResult from './components/multi-modal-bubble/EONET';
@@ -56,6 +56,15 @@ export default function Home() {
     maxSteps: 5
   });
 
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const element = containerRef.current;
+    if (element) {
+      element.scrollTop = element.scrollHeight;
+    }
+  }, [messages]);
+
   return (
     <div className="flex flex-col gap-10 min-h-screen p-8 pb-10 sm:py-10 sm:px-20 sm font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 items-center sm:items-start">
@@ -66,12 +75,11 @@ export default function Home() {
           </li>
           <li>Chat about anything with this super awesome Rocket Man! {"(he loves astronomy)"}</li>
         </ol>
-        <section className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
+        <section ref={containerRef} className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
           {(!messages || messages?.length === 0) && <span className='text-gray-500 font-medium self-center mt-20'>Start chatting with Rocket Man!</span>}
           {messages.map((message, idx) => (
             <ResultParser key={idx} idx={idx} isLoading={isLoading} messages={messages} message={message} addToolResult={addToolResult} />
           ))}
-          <div id='anchor'/>
         </section>
         <section className="w-full flex gap-4">
           <input value={input} onChange={handleInputChange} onKeyUp={(e) => e.key === 'Enter' && handleSubmit(e)} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" ref={promptRef} />
