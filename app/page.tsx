@@ -2,7 +2,7 @@
 import { Message, ToolInvocation } from 'ai';
 import { useChat } from 'ai/react';
 import Image from "next/image";
-import { useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import Markdown from 'react-markdown';
 import APODResult from './components/multi-modal-bubble/Apod';
 import EONETResult from './components/multi-modal-bubble/EONET';
@@ -19,24 +19,22 @@ const ResultParser = ({
   message: Message,
   isLoading: boolean
 }) => {
-  const MultiModalResult = ({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
-
+  const MultiModalResult = useCallback(({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
     if (toolInvocation) {
-      const isResult = 'result' in toolInvocation;
       if (toolInvocation.state === 'call' || toolInvocation.state === 'partial-call') {
         return 'Getting there...'
       }
       switch (toolInvocation.toolName) {
         case 'astronomyPictureOfTheDay':
-          return isResult ? <APODResult key={toolInvocation.toolCallId} result={toolInvocation.result} /> : null;
+          return <APODResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />;
         case 'naturalEventsShowcase':
-          return isResult ? <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} /> : null
+          return <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />
         default:
           return null;
       }
     } 
     return 'Nothin\' to see here, bro'
-  }
+  }, []);
   return (
     <>
       <div className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
