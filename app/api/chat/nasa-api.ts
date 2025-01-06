@@ -27,18 +27,17 @@ const fetchAPOD = tool({
 });
 
 const getNaturalEventType = tool({
-  description: 'Ask the user to select which natural event type the user want to choose between given options.',
+  description: 'Ask the user to choose natural event type.',
   parameters: z.object({
-    message: z.string().describe('The message to ask the user for selecting a natural event type')
+    message: z.string().describe(`The message to ask the user to choose natural event type from these option: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
   })
 })
 
 const fetchEONET = tool({
-  description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user.
-  Always ask user to select the natural event type before using this tool. End it with your witty analysis on the data`,
+  description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Ask the user to choose the type of natural event first. End it with your witty analysis on the data`,
   parameters: z.object({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
-    eventType: z.string().describe(`The type of the natural event from this data and only show the labels: ${JSON.stringify(NATURAL_EVENTS)}`)
+    eventType: z.string()
   }),
   execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<GlobeDataArrayResponse>  => {
     const response = await Services.get(`${EONET_URL}/api/v2.1/events?limit=10&days=${days}&status=open`);

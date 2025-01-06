@@ -7,28 +7,32 @@ import Markdown from 'react-markdown';
 import APODResult from './components/multi-modal-bubble/Apod';
 import EONETResult from './components/multi-modal-bubble/EONET';
 import Link from 'next/link';
+import NaturalEventSelect from './components/multi-modal-bubble/NaturalEventSelect';
 
 const ResultParser = ({
   idx,
   messages,
   message,
-  isLoading
+  isLoading,
+  addToolResult
 }: {
   idx: number,
   messages: Message[],
   message: Message,
-  isLoading: boolean
+  isLoading: boolean,
+  addToolResult: ({ toolCallId, result }: { toolCallId: string, result: string }) => void
 }) => {
   const MultiModalResult = useCallback(({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
+    const addResult = (result: string) => addToolResult({ toolCallId: toolInvocation.toolCallId, result });
     if (toolInvocation) {
-      if (toolInvocation.state === 'call' || toolInvocation.state === 'partial-call') {
-        return 'Getting there...'
-      }
+      const isResult = 'result' in toolInvocation;
       switch (toolInvocation.toolName) {
         case 'astronomyPictureOfTheDay':
-          return <APODResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />;
+          return <APODResult key={toolInvocation.toolCallId} result={isResult ? toolInvocation.result : null} />;
         case 'naturalEventsShowcase':
-          return <EONETResult key={toolInvocation.toolCallId} message={message} result={toolInvocation.result} />
+          return <EONETResult key={toolInvocation.toolCallId} message={message} result={isResult ? toolInvocation.result : null} />;
+        case 'getNaturalEventType':
+          return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} addResult={addResult} />;
         default:
           return null;
       }
@@ -52,7 +56,7 @@ const ResultParser = ({
 
 export default function Home() {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, addToolResult } = useChat({
     api: 'api/chat',
     maxSteps: 5
   });
@@ -70,7 +74,7 @@ export default function Home() {
         <section className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
           {(!messages || messages?.length === 0) && <span className='text-gray-500 font-medium self-center mt-20'>Start chatting with Rocket Man!</span>}
           {messages.map((message, idx) => (
-            <ResultParser key={idx} idx={idx} isLoading={isLoading} messages={messages} message={message} />
+            <ResultParser key={idx} idx={idx} isLoading={isLoading} messages={messages} message={message} addToolResult={addToolResult} />
           ))}
         </section>
         <section className="w-full flex gap-4">

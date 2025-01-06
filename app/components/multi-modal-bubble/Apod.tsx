@@ -1,11 +1,9 @@
 import { APODResponse } from "@/types/nasa-api";
-import { Message } from "ai";
 import Image from "next/image";
 import Link from "next/link";
-import { Suspense, useCallback } from "react";
+import { useCallback } from "react";
 
-const APODResult = ({ result }: { message: Message, result: APODResponse }) => {
-
+const APODResult = ({ result }: { result: APODResponse }) => {
   const renderMedia = useCallback((mediaType: string) => {
     switch (mediaType) {
       case 'image':
@@ -64,12 +62,11 @@ const APODResult = ({ result }: { message: Message, result: APODResponse }) => {
     }
   }, [result])
 
+  if (!result) return <span>Getting there...</span>
   if ('error' in result || !result.url || result.url === '') return <span>Oops, something wrong happened while getting the content...</span>;
   return (
     <div className='relative'>
-      <Suspense fallback={<p>Loading media...</p>}>
-        {renderMedia(result.media_type)}
-      </Suspense>
+      {renderMedia(result.media_type)}
     </div>
   )
 }
