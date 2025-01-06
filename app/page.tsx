@@ -7,14 +7,12 @@ import Markdown from 'react-markdown';
 import APODResult from './components/multi-modal-bubble/Apod';
 import EONETResult from './components/multi-modal-bubble/EONET';
 import Link from 'next/link';
-import NaturalEventSelect from './components/multi-modal-bubble/NaturalEventSelect';
 
 const ResultParser = ({
   idx,
   messages,
   message,
-  isLoading,
-  addToolResult
+  isLoading
 }: {
   idx: number,
   messages: Message[],
@@ -23,7 +21,6 @@ const ResultParser = ({
   addToolResult: ({ toolCallId, result }: { toolCallId: string, result: string }) => void
 }) => {
   const MultiModalResult = useCallback(({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
-    const addResult = (result: string) => addToolResult({ toolCallId: toolInvocation.toolCallId, result });
     if (toolInvocation) {
       const isResult = 'result' in toolInvocation;
       switch (toolInvocation.toolName) {
@@ -31,8 +28,6 @@ const ResultParser = ({
           return <APODResult key={toolInvocation.toolCallId} result={isResult ? toolInvocation.result : null} />;
         case 'naturalEventsShowcase':
           return <EONETResult key={toolInvocation.toolCallId} message={message} result={isResult ? toolInvocation.result : null} />;
-        // case 'getNaturalEventType':
-        //   return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} addResult={addResult} />;
         default:
           return null;
       }

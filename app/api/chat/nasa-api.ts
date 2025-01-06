@@ -4,7 +4,6 @@ import Services from '@/app/service';
 import { getYesterdayDate } from '@/app/helper';
 import { APODResponse, EONETEvent, EONETResponse } from "@/types/nasa-api";
 import { GlobeDataArrayResponse } from '@/types/globe';
-import { NATURAL_EVENTS } from '@/app/helper/constant';
 
 const EONET_URL = 'https://eonet.gsfc.nasa.gov';
 
