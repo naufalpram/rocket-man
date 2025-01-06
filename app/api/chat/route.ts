@@ -1,7 +1,11 @@
 import { google } from '@ai-sdk/google';
 import { streamText, tool } from 'ai';
 import { z } from 'zod';
-import { fetchAPOD, fetchEONET, getNaturalEventType } from './nasa-api';
+import {
+  fetchAPOD,
+  fetchEONET,
+  // getNaturalEventType
+} from './nasa-api';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
@@ -42,7 +46,7 @@ export async function POST(req: Request) {
         },
       }),
       astronomyPictureOfTheDay: fetchAPOD,
-      getNaturalEventType: getNaturalEventType,
+      // getNaturalEventType: getNaturalEventType,
       naturalEventsShowcase: fetchEONET
     }
   });

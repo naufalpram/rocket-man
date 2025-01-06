@@ -31,8 +31,8 @@ const ResultParser = ({
           return <APODResult key={toolInvocation.toolCallId} result={isResult ? toolInvocation.result : null} />;
         case 'naturalEventsShowcase':
           return <EONETResult key={toolInvocation.toolCallId} message={message} result={isResult ? toolInvocation.result : null} />;
-        case 'getNaturalEventType':
-          return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} addResult={addResult} />;
+        // case 'getNaturalEventType':
+        //   return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} addResult={addResult} />;
         default:
           return null;
       }
@@ -76,6 +76,7 @@ export default function Home() {
           {messages.map((message, idx) => (
             <ResultParser key={idx} idx={idx} isLoading={isLoading} messages={messages} message={message} addToolResult={addToolResult} />
           ))}
+          <div id='anchor'/>
         </section>
         <section className="w-full flex gap-4">
           <input value={input} onChange={handleInputChange} onKeyUp={(e) => e.key === 'Enter' && handleSubmit(e)} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" ref={promptRef} />

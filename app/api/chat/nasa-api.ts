@@ -26,12 +26,12 @@ const fetchAPOD = tool({
     },
 });
 
-const getNaturalEventType = tool({
-  description: 'Ask the user to choose natural event type.',
-  parameters: z.object({
-    message: z.string().describe(`The message to ask the user to choose natural event type from these option: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
-  })
-})
+// const getNaturalEventType = tool({
+//   description: 'Ask the user to choose natural event type.',
+//   parameters: z.object({
+//     message: z.string().describe(`The message to ask the user to choose natural event type from these option: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
+//   })
+// })
 
 const fetchEONET = tool({
   description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Ask the user to choose the type of natural event first. End it with your witty analysis on the data`,
@@ -59,4 +59,8 @@ const fetchEONET = tool({
   }
 })
 
-export { fetchAPOD, getNaturalEventType, fetchEONET };
+export {
+  fetchAPOD,
+  // getNaturalEventType,
+  fetchEONET
+};
