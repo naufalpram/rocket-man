@@ -4,6 +4,7 @@ import Services from '@/app/service';
 import { getYesterdayDate } from '@/app/helper';
 import { APODResponse, EONETEvent, EONETResponse } from "@/types/nasa-api";
 import { GlobeDataArrayResponse } from '@/types/globe';
+import { NATURAL_EVENTS } from '@/app/helper/constant';
 
 const EONET_URL = 'https://eonet.gsfc.nasa.gov';
 
@@ -36,7 +37,7 @@ const fetchEONET = tool({
   description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Ask the user to choose the type of natural event first. End it with your witty analysis on the data`,
   parameters: z.object({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
-    eventType: z.string()
+    eventType: z.string().describe(`The natural event type, limited to these options: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
   }),
   execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<GlobeDataArrayResponse>  => {
     const response = await Services.get(`${EONET_URL}/api/v2.1/events?limit=10&days=${days}&status=open`);
