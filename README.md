@@ -7,6 +7,7 @@ Rocket Man is an AI-chatbot web app integrated with NASA Open API built with Ver
 
 - **Chat with Rocket Man**: Ask about anything to Rocket Man, especially about astronomy
 - **Astronomy Picture of The Day**: Rocket Man will show you NASA's Astronomy Picture of The Day, you can choose the date!
+- **Natural Event Globe Visualization**: Rocket Man will display the globe visualization where natural events happened on earth.
 - More feature in development!
 
 ## 💻 Installation
