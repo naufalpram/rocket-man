@@ -3,11 +3,13 @@ import { Message } from 'ai';
 import React, { useState } from 'react'
 import Markdown from 'react-markdown';
 
-function NaturalEventSelect({ message, addResult }: { message: Message, addResult: (result: string ) => void }) {
+function NaturalEventSelect({ message, setInput }: { message: Message, setInput: (value: string ) => void }) {
   const [selected, setSelected] = useState<string | null>('');
   const selectType = (type: string) => {
-    addResult(type);
-    setSelected(type);
+    if (!selected) {
+      setInput(type);
+      setSelected(type);
+    }
   }
   return (
     <>
@@ -20,8 +22,8 @@ function NaturalEventSelect({ message, addResult }: { message: Message, addResul
                 key={event.id}
                 disabled={shouldDisabled}
                 onClick={() => selectType(event.label)}
-                className={`px-4 py-5 border font-medium border-white/35 rounded-md hover:bg-white hover:text-[#232037] transition-colors
-                  ${shouldDisabled ? 'bg-transparent text-white opacity-60 hover:bg-transparent hover:text-white' : ''}
+                className={`px-4 py-5 border font-medium border-white/35 rounded-md transition-colors
+                  ${shouldDisabled ? 'bg-transparent text-white opacity-60 hover:bg-transparent hover:text-white' : 'hover:bg-white hover:text-[#232037]'}
                   ${isSelected ? 'bg-white text-[#232037]' : ''}
                 `}
             >

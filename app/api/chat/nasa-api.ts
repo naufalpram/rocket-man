@@ -4,7 +4,6 @@ import Services from '@/app/service';
 import { getYesterdayDate } from '@/app/helper';
 import { APODResponse, EONETEvent, EONETResponse } from "@/types/nasa-api";
 import { GlobeDataArrayResponse } from '@/types/globe';
-import { NATURAL_EVENTS } from '@/app/helper/constant';
 
 const EONET_URL = 'https://eonet.gsfc.nasa.gov';
 
@@ -26,18 +25,18 @@ const fetchAPOD = tool({
     },
 });
 
-// const getNaturalEventType = tool({
-//   description: 'Ask the user to choose natural event type.',
-//   parameters: z.object({
-//     message: z.string().describe(`The message to ask the user to choose natural event type from these option: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
-//   })
-// })
+const getNaturalEventType = tool({
+  description: 'Show the user a list of natural event types to choose.',
+  parameters: z.object({
+    message: z.string().describe(`The message to show the user a list of natural event types to choose`)
+  })
+})
 
 const fetchEONET = tool({
-  description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Ask the user to choose the type of natural event first. End it with your witty analysis on the data`,
+  description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Show the user the natural event types to choose first and then use the answer. End it with your witty analysis on the data`,
   parameters: z.object({
     days: z.number().describe('The number of prior days (including today) from which natural events will be returned.'),
-    eventType: z.string().describe(`The natural event type, limited to these options: ${NATURAL_EVENTS.map((event) => event.label).join(',')}`)
+    eventType: z.string().describe('natural event type from context')
   }),
   execute: async ({ days, eventType }: { days: number, eventType: string }): Promise<GlobeDataArrayResponse>  => {
     const response = await Services.get(`${EONET_URL}/api/v2.1/events?limit=10&days=${days}&status=open`);
@@ -61,6 +60,6 @@ const fetchEONET = tool({
 
 export {
   fetchAPOD,
-  // getNaturalEventType,
+  getNaturalEventType,
   fetchEONET
 };

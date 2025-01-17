@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   fetchAPOD,
   fetchEONET,
+  getNaturalEventType,
   // getNaturalEventType
 } from './nasa-api';
 
@@ -46,7 +47,7 @@ export async function POST(req: Request) {
         },
       }),
       astronomyPictureOfTheDay: fetchAPOD,
-      // getNaturalEventType: getNaturalEventType,
+      getNaturalEventType: getNaturalEventType,
       naturalEventsShowcase: fetchEONET
     }
   });
