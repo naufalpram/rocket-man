@@ -9,19 +9,9 @@ import Link from 'next/link';
 import NaturalEventSelect from './components/multi-modal-bubble/NaturalEventSelect';
 import { useChatGlobal } from './context/useChatGlobal';
 
-const ResultParser = ({
-  idx,
-  messages,
-  message,
-  isLoading,
-  setInput
-}: {
-  idx: number,
-  messages: Message[],
-  message: Message,
-  isLoading: boolean,
-  setInput: (value: string) => void
-}) => {
+const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
+  const { messages, isLoading } = useChatGlobal();
+
   const MultiModalResult = useCallback(({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
     if (toolInvocation) {
       const isResult = 'result' in toolInvocation;
@@ -31,7 +21,7 @@ const ResultParser = ({
         case 'naturalEventsShowcase':
           return <EONETResult key={toolInvocation.toolCallId} message={message} result={isResult ? toolInvocation.result : null} />;
         case 'getNaturalEventType':
-          return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} setInput={setInput} />;
+          return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} toolCallId={toolInvocation.toolCallId} />;
         default:
           return null;
       }
@@ -55,7 +45,7 @@ const ResultParser = ({
 
 export default function Home() {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChatGlobal();
+  const { messages, input, handleInputChange, handleSubmit } = useChatGlobal();
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -79,7 +69,7 @@ export default function Home() {
         <section ref={containerRef} className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
           {(!messages || messages?.length === 0) && <span className='text-gray-500 font-medium self-center mt-20'>Start chatting with Rocket Man!</span>}
           {messages.map((message, idx) => (
-            <ResultParser key={idx} idx={idx} isLoading={isLoading} messages={messages} message={message} setInput={setInput} />
+            <ResultParser key={idx} idx={idx} message={message} />
           ))}
         </section>
         <section className="w-full flex gap-4">

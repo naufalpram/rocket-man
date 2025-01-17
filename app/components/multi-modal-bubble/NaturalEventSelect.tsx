@@ -1,13 +1,15 @@
+import { useChatGlobal } from '@/app/context/useChatGlobal';
 import { NATURAL_EVENTS } from '@/app/helper/constant';
 import { Message } from 'ai';
 import React, { useState } from 'react'
 import Markdown from 'react-markdown';
 
-function NaturalEventSelect({ message, setInput }: { message: Message, setInput: (value: string ) => void }) {
+function NaturalEventSelect({ message, toolCallId }: { message: Message, toolCallId: string }) {
+  const { addToolResult } = useChatGlobal();
   const [selected, setSelected] = useState<string | null>('');
   const selectType = (type: string) => {
     if (!selected) {
-      setInput(type);
+      addToolResult({ toolCallId, result: { eventType: type } });
       setSelected(type);
     }
   }
