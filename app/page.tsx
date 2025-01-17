@@ -1,6 +1,5 @@
 'use client'
 import { Message, ToolInvocation } from 'ai';
-import { useChat } from 'ai/react';
 import Image from "next/image";
 import { useCallback, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
@@ -8,6 +7,7 @@ import APODResult from './components/multi-modal-bubble/Apod';
 import EONETResult from './components/multi-modal-bubble/EONET';
 import Link from 'next/link';
 import NaturalEventSelect from './components/multi-modal-bubble/NaturalEventSelect';
+import { useChatGlobal } from './context/useChatGlobal';
 
 const ResultParser = ({
   idx,
@@ -55,10 +55,7 @@ const ResultParser = ({
 
 export default function Home() {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChat({
-    api: 'api/chat',
-    maxSteps: 5
-  });
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput } = useChatGlobal();
 
   const containerRef = useRef<HTMLDivElement>(null);
 
