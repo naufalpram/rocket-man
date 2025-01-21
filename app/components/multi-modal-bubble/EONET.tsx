@@ -92,23 +92,21 @@ function Globe({ result, showModal, toggleModal }: { result: Array<GlobeData>, s
 
   if (showModal) {
       return createPortal(
-        <main className='absolute top-0 left-0 z-50 w-full h-screen bg-black/50 flex justify-center items-center'>
-            <section id='modal-container' className='w-[80%] h-[80%] bg-[#232037] p-6 rounded-2xl'>
-                <div id='modal-header' className='w-full mb-4 py-2 flex justify-between items-center'>
+        <main className='absolute top-0 left-0 z-50 w-full h-screen bg-black'>
+            <div id='web-gl-wrapper' className='w-full h-full p-10'>
+                <div id='portal-header' className='w-full mb-4 py-2 flex justify-between items-center'>
                     <h2 className='font-semibold text-lg text-white'>Map of Natural Events based on Nasa Open API</h2>
                     <Image
                         src={CloseIcon}
                         alt='Close Icon'
                         sizes='100vw'
                         className='cursor-pointer'
-                        style={{ width: '20px', height: '20px' }}
+                        style={{ width: '24px', height: '24px' }}
                         onClick={toggleModal}
                      />
                 </div>
-                <div id='web-gl-wrapper' className='w-full overflow-hidden'>
-                    <div id='web-gl-container' ref={refContainer}></div>
-                </div>
-            </section>
+                <div id='web-gl-container' ref={refContainer}></div>
+            </div>
         </main>,
         document.getElementById('modal-root') as HTMLDivElement
       );

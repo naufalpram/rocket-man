@@ -64,13 +64,11 @@ body {
     }    
   }
 
-  #modal-container {
-    #web-gl-wrapper #web-gl-container {
-      canvas {
-        border-radius: 20px;
-        width: 100% !important;
-        height: 50% !important;
-      }
+  #web-gl-wrapper #web-gl-container {
+    canvas {
+      border-radius: 20px;
+      width: 100% !important;
+      height: 50% !important;
     }
   }
 }
