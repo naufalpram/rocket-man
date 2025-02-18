@@ -1,9 +1,10 @@
 import { APODResponse } from "@/types/nasa-api";
+import { Message } from "ai";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
 
-const APODResult = ({ result }: { result: APODResponse }) => {
+const APODResult = ({ message, result }: { message: Message, result: APODResponse }) => {
   const renderMedia = useCallback((mediaType: string) => {
     switch (mediaType) {
       case 'image':
@@ -65,9 +66,12 @@ const APODResult = ({ result }: { result: APODResponse }) => {
   if (!result) return <span>Getting there...</span>
   if ('error' in result || !result.url || result.url === '') return <span>Oops, something wrong happened while getting the content...</span>;
   return (
+    <>
+    <div className="mb-3">{message.content}</div>
     <div className='relative'>
       {renderMedia(result.media_type)}
     </div>
+    </>
   )
 }
 

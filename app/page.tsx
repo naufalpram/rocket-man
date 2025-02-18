@@ -1,44 +1,29 @@
 'use client'
 import { Message, ToolInvocation } from 'ai';
 import Image from "next/image";
-import { useCallback, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
-import APODResult from './components/multi-modal-bubble/Apod';
-import EONETResult from './components/multi-modal-bubble/EONET';
 import Link from 'next/link';
-import NaturalEventSelect from './components/multi-modal-bubble/NaturalEventSelect';
 import { useChatGlobal } from './context/useChatGlobal';
+import MultiModalResult from './components/multi-modal-bubble';
 
 const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
   const { messages, isLoading } = useChatGlobal();
-
-  const MultiModalResult = useCallback(({ toolInvocation, message }: { toolInvocation: ToolInvocation, message: Message }) => {
-    if (toolInvocation) {
-      const isResult = 'result' in toolInvocation;
-      switch (toolInvocation.toolName) {
-        case 'astronomyPictureOfTheDay':
-          return <APODResult key={toolInvocation.toolCallId} result={isResult ? toolInvocation.result : null} />;
-        case 'naturalEventsShowcase':
-          return <EONETResult key={toolInvocation.toolCallId} message={message} result={isResult ? toolInvocation.result : null} />;
-        case 'getNaturalEventType':
-          return <NaturalEventSelect key={toolInvocation.toolCallId} message={message} toolCallId={toolInvocation.toolCallId} />;
-        default:
-          return null;
-      }
-    } 
-    return 'Nothin\' to see here, bro'
-  }, []);
+  const isTyping = [
+    isLoading,
+    idx === messages.length - 1
+  ]
   return (
     <>
       <div className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
-        <div className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</div>
+        <h4 className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</h4>
         {message.toolInvocations ? (
           message.toolInvocations?.map((toolInvocation: ToolInvocation) => (
             <MultiModalResult key={toolInvocation.toolCallId} message={message} toolInvocation={toolInvocation} />
           ))
         ) : (<Markdown>{message.content}</Markdown>)}
       </div>
-      {isLoading && idx === messages.length - 1 && <span className='text-gray-500'>Typing...</span>}
+      {isTyping.every((condition) => condition) && <span className='text-gray-500 animate-pulse'>Typing...</span>}
     </>
   )
 }
