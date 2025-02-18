@@ -1,10 +1,8 @@
 import { useChatGlobal } from '@/app/context/useChatGlobal';
 import { NATURAL_EVENTS } from '@/app/helper/constant';
-import { Message } from 'ai';
-import React, { useState } from 'react'
-import Markdown from 'react-markdown';
+import React, { useState } from 'react';
 
-function NaturalEventSelect({ message, toolCallId }: { message: Message, toolCallId: string }) {
+function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
   const { addToolResult } = useChatGlobal();
   const [selected, setSelected] = useState<string | null>('');
   const selectType = (type: string) => {
@@ -15,7 +13,6 @@ function NaturalEventSelect({ message, toolCallId }: { message: Message, toolCal
   }
   return (
     <>
-    <Markdown>{message.content}</Markdown>
     <div className='flex gap-4 flex-wrap'>
         {NATURAL_EVENTS.map((event) => {
             const isSelected = selected !== '' && selected === event.label;

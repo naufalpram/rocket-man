@@ -1,5 +1,5 @@
 'use client'
-import { Message, ToolInvocation } from 'ai';
+import { Message } from 'ai';
 import Image from "next/image";
 import { useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
@@ -8,20 +8,28 @@ import { useChatGlobal } from './context/useChatGlobal';
 import MultiModalResult from './components/multi-modal-bubble';
 
 const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
-  const { messages, isLoading } = useChatGlobal();
+  const { messages, status } = useChatGlobal();
   const isTyping = [
-    isLoading,
+    status === 'submitted',
     idx === messages.length - 1
-  ]
+  ];
+  
   return (
     <>
       <div className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
         <h4 className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</h4>
-        {message.toolInvocations ? (
-          message.toolInvocations?.map((toolInvocation: ToolInvocation) => (
-            <MultiModalResult key={toolInvocation.toolCallId} message={message} toolInvocation={toolInvocation} />
-          ))
-        ) : (<Markdown>{message.content}</Markdown>)}
+        {message.parts && message.parts.length < 1 ? <Markdown>{message.content}</Markdown> : (
+          message.parts?.map((part, idx) => {
+            switch (part.type) {
+              case 'text':
+                return <Markdown key={idx}>{part.text}</Markdown>;
+              case 'tool-invocation':
+                return <MultiModalResult key={part.toolInvocation.toolCallId} toolInvocation={part.toolInvocation} />;
+              default:
+                break;
+            }
+          })
+        )}
       </div>
       {isTyping.every((condition) => condition) && <span className='text-gray-500 animate-pulse'>Typing...</span>}
     </>

@@ -9,7 +9,7 @@ type ChatGlobalContext = {
     handleInputChange: (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => void,
     handleSubmit: (event?: { preventDefault?: () => void }, chatRequestOptions?: ChatRequestOptions) => void,
     setInput: Dispatch<SetStateAction<string>>,
-    isLoading: boolean,
+    status: "submitted" | "streaming" | "ready" | "error",
     addToolResult: ({ toolCallId, result, }: { toolCallId: string; result: unknown }) => void
 }
 
@@ -19,21 +19,21 @@ const defaultValues: ChatGlobalContext = {
     handleInputChange: () => {},
     handleSubmit: () => {},
     setInput: () => {},
-    isLoading: false,
+    status: 'ready',
     addToolResult: () => {}
 }
 
 const ChatGlobalContext = createContext(defaultValues);
 
 const ChatGlobalProvider = ({ children }: React.PropsWithChildren) => {
-    const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, addToolResult } = useChat({
+    const { messages, input, handleInputChange, handleSubmit, setInput, addToolResult, status } = useChat({
         api: 'api/chat',
         maxSteps: 5
       });
 
     return (
         <ChatGlobalContext.Provider value={{
-            messages, input, handleInputChange, handleSubmit, isLoading, setInput, addToolResult
+            messages, input, handleInputChange, handleSubmit, status, setInput, addToolResult
         }}>
             {children}
         </ChatGlobalContext.Provider>

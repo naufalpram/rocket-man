@@ -7,10 +7,8 @@ import { GlobeData, GlobeDataArrayResponse } from '@/types/globe';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import CloseIcon from '@/public/close-icon.svg';
-import { Message } from 'ai';
-import Markdown from 'react-markdown';
 
-export default function EONET({ result, message }: { result: GlobeDataArrayResponse, message: Message }) {
+export default function EONET({ result }: { result: GlobeDataArrayResponse }) {
     const [showModal, setShowModal] = useState(false);
 
     function handleToggleModal() {
@@ -18,7 +16,6 @@ export default function EONET({ result, message }: { result: GlobeDataArrayRespo
     }
     return (
         <>
-        <Markdown>{message.content}</Markdown>
         {result?.data && result.data.length > 0 && (
             <>
             <div className='w-full h-full bg-[#16132b] p-4 flex items-center cursor-pointer' onClick={handleToggleModal}>

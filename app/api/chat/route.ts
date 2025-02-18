@@ -1,5 +1,5 @@
 import { google } from '@ai-sdk/google';
-import { streamText, tool } from 'ai';
+import { smoothStream, streamText, tool } from 'ai';
 import { z } from 'zod';
 import {
   fetchAPOD,
@@ -13,10 +13,12 @@ export const maxDuration = 30;
 export async function POST(req: Request) {
   const { messages } = await req.json();
 
-  const result = await streamText({
+  const result = streamText({
     model: google('gemini-1.5-flash-latest'),
     system: 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy. You can still add your knowledge on everything, not just on astronomy.',
     messages,
+    experimental_transform: smoothStream(),
+    experimental_activeTools: ['astronomyPictureOfTheDay', 'getNaturalEventType', 'naturalEventsShowcase'],
     tools: {
       weather: tool({
         description: 'Get the weather in a location (farenheit)',
