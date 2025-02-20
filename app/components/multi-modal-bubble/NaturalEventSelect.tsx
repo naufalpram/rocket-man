@@ -7,7 +7,10 @@ function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
   const [selected, setSelected] = useState<string | null>('');
   const selectType = (type: string) => {
     if (!selected) {
-      addToolResult({ toolCallId, result: { eventType: type } });
+      addToolResult({
+        toolCallId,
+        result: `You want me to show ${type}, yeah?`
+      });
       setSelected(type);
     }
   }

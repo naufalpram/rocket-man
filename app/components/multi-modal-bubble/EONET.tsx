@@ -7,13 +7,19 @@ import { GlobeData, GlobeDataArrayResponse } from '@/types/globe';
 import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import CloseIcon from '@/public/close-icon.svg';
+import LoadingIndicator from '../loading-multi-modal/LoadingIndicator';
+import { useChatGlobal } from '@/app/context/useChatGlobal';
 
 export default function EONET({ result }: { result: GlobeDataArrayResponse }) {
+    const { status } = useChatGlobal();
     const [showModal, setShowModal] = useState(false);
 
     function handleToggleModal() {
         setShowModal(prev => !prev)
     }
+
+    if (!result && status === 'streaming') return <LoadingIndicator />
+    if (!result && status === 'error') return <span>Oops, something wrong happened while getting the content...</span>;
     return (
         <>
         {result?.data && result.data.length > 0 && (

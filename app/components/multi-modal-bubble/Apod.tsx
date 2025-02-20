@@ -1,9 +1,12 @@
+import { useChatGlobal } from "@/app/context/useChatGlobal";
 import { APODResponse } from "@/types/nasa-api";
 import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
+import LoadingIndicator from "../loading-multi-modal/LoadingIndicator";
 
 const APODResult = ({ result }: { result: APODResponse }) => {
+  const { status } = useChatGlobal();
   const renderMedia = useCallback((mediaType: string) => {
     switch (mediaType) {
       case 'image':
@@ -62,9 +65,9 @@ const APODResult = ({ result }: { result: APODResponse }) => {
     }
   }, [result])
 
-  if (!result) return <span>Getting there...</span>
-  if ('error' in result || !result.url || result.url === '') return <span>Oops, something wrong happened while getting the content...</span>;
-  return (
+  if (!result && status === 'streaming') return <LoadingIndicator />
+  if (!result && status === 'error') return <span>Oops, something wrong happened while getting the content...</span>;
+  if (result && 'media_type' in result) return (
     <div className='relative'>
       {renderMedia(result.media_type)}
     </div>
