@@ -1,6 +1,7 @@
 import { useChatGlobal } from '@/app/context/useChatGlobal';
 import { NATURAL_EVENTS } from '@/app/helper/constant';
 import React, { useState } from 'react';
+import * as m from 'motion/react-m';
 
 function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
   const { addToolResult } = useChatGlobal();
@@ -17,10 +18,13 @@ function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
   return (
     <>
     <div className='flex gap-4 flex-wrap'>
-        {NATURAL_EVENTS.map((event) => {
+        {NATURAL_EVENTS.map((event, idx) => {
             const isSelected = selected !== '' && selected === event.label;
             const shouldDisabled = selected !== '' && selected !== event.label;
-            return <button
+            return <m.button
+                initial={{ x: -10, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ delay: 0.1 * (idx+1) }}
                 key={event.id}
                 disabled={shouldDisabled}
                 onClick={() => selectType(event.label)}
@@ -30,7 +34,7 @@ function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
                 `}
             >
                 {event.label}
-            </button>
+            </m.button>
         })}
     </div>
     </>

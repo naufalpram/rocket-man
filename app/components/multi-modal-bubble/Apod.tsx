@@ -4,6 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { useCallback } from "react";
 import LoadingIndicator from "../loading-multi-modal/LoadingIndicator";
+import * as m from 'motion/react-m';
+import { LazyMotion, domAnimation } from 'motion/react';
 
 const APODResult = ({ result }: { result: APODResponse }) => {
   const { status } = useChatGlobal();
@@ -65,12 +67,14 @@ const APODResult = ({ result }: { result: APODResponse }) => {
     }
   }, [result])
 
-  if (!result && status === 'streaming') return <LoadingIndicator />
+  if (!result && status === 'streaming') return <LoadingIndicator size="md" />
   if (!result && status === 'error') return <span>Oops, something wrong happened while getting the content...</span>;
   if (result && 'media_type' in result) return (
-    <div className='relative'>
-      {renderMedia(result.media_type)}
-    </div>
+    <LazyMotion features={domAnimation} strict>
+      <m.div initial={{ x: -20, opacity: 0 }} animate={{ x: 0, opacity: 1 }} className='relative'>
+        {renderMedia(result.media_type)}
+      </m.div>
+    </LazyMotion>
   )
 }
 

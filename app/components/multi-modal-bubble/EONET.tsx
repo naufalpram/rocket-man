@@ -18,7 +18,7 @@ export default function EONET({ result }: { result: GlobeDataArrayResponse }) {
         setShowModal(prev => !prev)
     }
 
-    if (!result && status === 'streaming') return <LoadingIndicator />
+    if (!result && status === 'streaming') return <LoadingIndicator size='md' />
     if (!result && status === 'error') return <span>Oops, something wrong happened while getting the content...</span>;
     return (
         <>

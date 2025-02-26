@@ -6,6 +6,9 @@ import Markdown from 'react-markdown';
 import Link from 'next/link';
 import { useChatGlobal } from './context/useChatGlobal';
 import MultiModalResult from './components/multi-modal-bubble';
+import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
+import * as m from 'motion/react-m'
+import LoadingIndicator from './components/loading-multi-modal/LoadingIndicator';
 
 const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
   const { messages, status } = useChatGlobal();
@@ -16,7 +19,7 @@ const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
   
   return (
     <>
-      <div className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
+      <m.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
         <h4 className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</h4>
         {message.parts && message.parts.length < 1 ? <Markdown>{message.content}</Markdown> : (
           message.parts?.map((part, idx) => {
@@ -30,15 +33,39 @@ const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
             }
           })
         )}
-      </div>
-      {isTyping.every((condition) => condition) && <span className='text-gray-500 animate-pulse'>Typing...</span>}
+      </m.div>
+      {isTyping.every((condition) => condition) && (
+        <AnimatePresence>
+          <m.span layout initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} className='text-gray-500 animate-pulse'>Typing...</m.span>
+        </AnimatePresence>
+      )}
+    </>
+  )
+}
+
+const UserPrompt = () => {
+  const promptRef = useRef<HTMLInputElement>(null);
+  const { input, handleInputChange, handleSubmit, status } = useChatGlobal();
+
+  const submitButtonVariant = {
+    baseSubmit: { y: 0, opacity: 1 },
+    baseLoading: { y: 10, opacity: 0 },
+    transitionSubmit: { y: -10, opacity: 0 },
+    transitionLoading: { y: 0, opacity: 1 }
+  };
+  return (
+    <>
+    <input disabled={status === 'submitted'} value={input} onChange={handleInputChange} onKeyUp={(e) => e.key === 'Enter' && handleSubmit(e)} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" ref={promptRef} />
+    <button disabled={status === 'submitted' || status === 'streaming'} id='submit-btn' className="text-white bg-transparent px-4 py-2 min-w-[85px] flex justify-center items-center" onClick={handleSubmit}>
+      {(status === 'ready' || status === 'error') && <m.span variants={submitButtonVariant} initial={['baseSubmit', 'transitionSubmit']} animate='baseSubmit' exit='transitionSubmit'>Submit</m.span>}
+      {(status === 'submitted' || status === 'streaming') && <m.span variants={submitButtonVariant} initial='baseLoading' animate='transitionLoading' exit='baseLoading'><LoadingIndicator size='sm' /></m.span>}
+    </button>
     </>
   )
 }
 
 export default function Home() {
-  const promptRef = useRef<HTMLInputElement>(null);
-  const { messages, input, handleInputChange, handleSubmit } = useChatGlobal();
+  const { messages } = useChatGlobal();
 
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -50,6 +77,7 @@ export default function Home() {
   }, [messages]);
 
   return (
+    <LazyMotion features={domAnimation}>
     <div className="flex flex-col gap-10 min-h-screen p-8 pb-10 sm:py-10 sm:px-20 sm font-[family-name:var(--font-geist-sans)]">
       <main className="flex flex-col gap-8 items-center sm:items-start">
         <h1 className='text-4xl font-semibold font-space text-[#fe754d]'>Rocket Man</h1>
@@ -66,8 +94,7 @@ export default function Home() {
           ))}
         </section>
         <section className="w-full flex gap-4">
-          <input value={input} onChange={handleInputChange} onKeyUp={(e) => e.key === 'Enter' && handleSubmit(e)} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" ref={promptRef} />
-          <button id='submit-btn' className="text-white bg-transparent px-4 py-2" onClick={handleSubmit}>Submit</button>
+          <UserPrompt />
         </section>
       </main>
       <footer className="flex gap-6 flex-wrap items-center justify-center">
@@ -89,5 +116,6 @@ export default function Home() {
         </Link>
       </footer>
     </div>
+    </LazyMotion>
   );
 }
