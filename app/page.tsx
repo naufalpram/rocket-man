@@ -1,7 +1,7 @@
 'use client'
 import { Message } from 'ai';
 import Image from "next/image";
-import { useEffect, useRef } from 'react';
+import { KeyboardEventHandler, useCallback, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import Link from 'next/link';
 import { useChatGlobal } from './context/useChatGlobal';
@@ -45,7 +45,7 @@ const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
 
 const UserPrompt = () => {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { input, handleInputChange, handleSubmit, status } = useChatGlobal();
+  const { status, append } = useChatGlobal();
 
   const submitButtonVariant = {
     baseSubmit: { y: 0, opacity: 1 },
@@ -53,9 +53,22 @@ const UserPrompt = () => {
     transitionSubmit: { y: -10, opacity: 0 },
     transitionLoading: { y: 0, opacity: 1 }
   };
+  const handleEnter: KeyboardEventHandler = useCallback((e) => {
+    if (e.key === 'Enter' && promptRef.current) {
+      append({ role: 'user', content: promptRef.current.value});
+      promptRef.current.value = '';
+    }
+  }, [append]);
+
+  const handleSubmit = useCallback(() => {
+    if (promptRef.current) {
+      append({ role: 'user', content: promptRef.current.value })
+      promptRef.current.value = '';
+    }
+  }, [append]);
   return (
     <>
-    <input disabled={status === 'submitted'} value={input} onChange={handleInputChange} onKeyUp={(e) => e.key === 'Enter' && handleSubmit(e)} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" ref={promptRef} />
+    <input ref={promptRef} disabled={status === 'submitted'} onKeyUp={handleEnter} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" />
     <button disabled={status === 'submitted' || status === 'streaming'} id='submit-btn' className="text-white bg-transparent px-4 py-2 min-w-[85px] flex justify-center items-center" onClick={handleSubmit}>
       {(status === 'ready' || status === 'error') && <m.span variants={submitButtonVariant} initial={['baseSubmit', 'transitionSubmit']} animate='baseSubmit' exit='transitionSubmit'>Submit</m.span>}
       {(status === 'submitted' || status === 'streaming') && <m.span variants={submitButtonVariant} initial='baseLoading' animate='transitionLoading' exit='baseLoading'><LoadingIndicator size='sm' /></m.span>}
