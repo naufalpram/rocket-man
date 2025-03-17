@@ -2,13 +2,13 @@
 import { Message } from 'ai';
 import Image from "next/image";
 import { KeyboardEventHandler, useCallback, useEffect, useRef } from 'react';
-import Markdown from 'react-markdown';
 import Link from 'next/link';
 import MultiModalResult from './components/multi-modal-bubble';
 import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
 import * as m from 'motion/react-m'
 import LoadingIndicator from './components/loading-multi-modal/LoadingIndicator';
 import { useChat } from '@ai-sdk/react';
+import MemoizedMarkdown from './components/memoized-markdown';
 
 const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
   const { messages, status } = useChat({
@@ -24,11 +24,11 @@ const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
     <>
       <m.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
         <h4 className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</h4>
-        {message.parts && message.parts.length < 1 ? <Markdown>{message.content}</Markdown> : (
+        {message.parts && message.parts.length < 1 ? <MemoizedMarkdown content={message.content} /> : (
           message.parts?.map((part, idx) => {
             switch (part.type) {
               case 'text':
-                return <Markdown key={idx}>{part.text}</Markdown>;
+                return <MemoizedMarkdown key={idx} content={part.text} />;
               case 'tool-invocation':
                 return <MultiModalResult key={part.toolInvocation.toolCallId} toolInvocation={part.toolInvocation} />;
               default:
