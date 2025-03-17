@@ -1,7 +1,7 @@
 'use client'
 import { Message } from 'ai';
 import Image from "next/image";
-import { KeyboardEventHandler, useCallback, useEffect, useRef } from 'react';
+import { KeyboardEventHandler, useCallback, useEffect, useRef, memo } from 'react';
 import Link from 'next/link';
 import MultiModalResult from './components/multi-modal-bubble';
 import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
@@ -10,41 +10,64 @@ import LoadingIndicator from './components/loading-multi-modal/LoadingIndicator'
 import { useChat } from '@ai-sdk/react';
 import MemoizedMarkdown from './components/memoized-markdown';
 
-const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
-  const { messages, status } = useChat({
-    id: 'chat',
-    maxSteps: 5
-  });
-  const isTyping = [
-    status === 'submitted',
-    idx === messages.length - 1
-  ];
-  
+const MessageParts = memo(({ parts }: { parts: Message['parts'] }) => {
+  return (
+    <>
+      {parts?.map((part, idx) => {
+        switch (part.type) {
+          case 'text':
+            return <MemoizedMarkdown key={idx} content={part.text} />;
+          case 'tool-invocation':
+            return <MultiModalResult key={part.toolInvocation.toolCallId} toolInvocation={part.toolInvocation} />;
+          default:
+            return null;
+        }
+      })}
+    </>
+  );
+});
+
+MessageParts.displayName = 'MessageParts';
+
+const TypingIndicator = memo(() => (
+  <AnimatePresence>
+    <m.span layout initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} className='text-gray-500 animate-pulse'>Typing...</m.span>
+  </AnimatePresence>
+));
+
+TypingIndicator.displayName = 'TypingIndicator';
+
+const ResultParser = memo(({ message, isLastMessage }: { message: Message, isLastMessage: boolean }) => {
   return (
     <>
       <m.div initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 0.2 }} className={`chat-bubble p-4 w-fit max-w-[50%] rounded-lg flex flex-col gap-3 ${message.role}`}>
         <h4 className="role-pill">{message.role === 'assistant' ? "Rocket Man" : "You"}</h4>
-        {message.parts && message.parts.length < 1 ? <MemoizedMarkdown content={message.content} /> : (
-          message.parts?.map((part, idx) => {
-            switch (part.type) {
-              case 'text':
-                return <MemoizedMarkdown key={idx} content={part.text} />;
-              case 'tool-invocation':
-                return <MultiModalResult key={part.toolInvocation.toolCallId} toolInvocation={part.toolInvocation} />;
-              default:
-                break;
-            }
-          })
+        {message.parts && message.parts.length < 1 ? (
+          <MemoizedMarkdown content={message.content} />
+        ) : (
+          <MessageParts parts={message.parts} />
         )}
       </m.div>
-      {isTyping.every((condition) => condition) && (
-        <AnimatePresence>
-          <m.span layout initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -20, opacity: 0 }} className='text-gray-500 animate-pulse'>Typing...</m.span>
-        </AnimatePresence>
-      )}
+      {isLastMessage && <ChatStatus />}
     </>
   )
-}
+});
+
+ResultParser.displayName = 'ResultParser';
+
+const ChatStatus = memo(() => {
+  const { status } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
+  
+  if (status === 'submitted') {
+    return <TypingIndicator />;
+  }
+  return null;
+});
+
+ChatStatus.displayName = 'ChatStatus';
 
 const UserPrompt = () => {
   const promptRef = useRef<HTMLInputElement>(null);
@@ -112,7 +135,7 @@ export default function Home() {
         <section ref={containerRef} className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
           {(!messages || messages?.length === 0) && <span className='text-gray-500 font-medium self-center mt-20'>Start chatting with Rocket Man!</span>}
           {messages.map((message, idx) => (
-            <ResultParser key={idx} idx={idx} message={message} />
+            <ResultParser key={idx} message={message} isLastMessage={idx === messages.length - 1} />
           ))}
         </section>
         <section className="w-full flex gap-4">
