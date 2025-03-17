@@ -1,4 +1,3 @@
-import { useChatGlobal } from "@/app/context/useChatGlobal";
 import { APODResponse } from "@/types/nasa-api";
 import Image from "next/image";
 import Link from "next/link";
@@ -6,9 +5,13 @@ import { useCallback } from "react";
 import LoadingIndicator from "../loading-multi-modal/LoadingIndicator";
 import * as m from 'motion/react-m';
 import { LazyMotion, domAnimation } from 'motion/react';
+import { useChat } from "@ai-sdk/react";
 
 const APODResult = ({ result }: { result: APODResponse }) => {
-  const { status } = useChatGlobal();
+  const { status } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
   const renderMedia = useCallback((mediaType: string) => {
     switch (mediaType) {
       case 'image':

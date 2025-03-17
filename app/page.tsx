@@ -4,14 +4,17 @@ import Image from "next/image";
 import { KeyboardEventHandler, useCallback, useEffect, useRef } from 'react';
 import Markdown from 'react-markdown';
 import Link from 'next/link';
-import { useChatGlobal } from './context/useChatGlobal';
 import MultiModalResult from './components/multi-modal-bubble';
 import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
 import * as m from 'motion/react-m'
 import LoadingIndicator from './components/loading-multi-modal/LoadingIndicator';
+import { useChat } from '@ai-sdk/react';
 
 const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
-  const { messages, status } = useChatGlobal();
+  const { messages, status } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
   const isTyping = [
     status === 'submitted',
     idx === messages.length - 1
@@ -45,7 +48,10 @@ const ResultParser = ({ idx, message }: { idx: number, message: Message }) => {
 
 const UserPrompt = () => {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { status, append } = useChatGlobal();
+  const { status, append } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
 
   const submitButtonVariant = {
     baseSubmit: { y: 0, opacity: 1 },
@@ -78,7 +84,10 @@ const UserPrompt = () => {
 }
 
 export default function Home() {
-  const { messages } = useChatGlobal();
+  const { messages } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
 
   const containerRef = useRef<HTMLDivElement>(null);
 

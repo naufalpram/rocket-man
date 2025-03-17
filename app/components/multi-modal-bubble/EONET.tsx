@@ -8,10 +8,14 @@ import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import CloseIcon from '@/public/close-icon.svg';
 import LoadingIndicator from '../loading-multi-modal/LoadingIndicator';
-import { useChatGlobal } from '@/app/context/useChatGlobal';
+import { useChat } from '@ai-sdk/react';
+
 
 export default function EONET({ result }: { result: GlobeDataArrayResponse }) {
-    const { status } = useChatGlobal();
+    const { status } = useChat({
+        id: 'chat',
+        maxSteps: 5
+    });
     const [showModal, setShowModal] = useState(false);
 
     function handleToggleModal() {

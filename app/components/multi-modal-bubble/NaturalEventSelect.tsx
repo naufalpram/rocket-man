@@ -1,10 +1,13 @@
-import { useChatGlobal } from '@/app/context/useChatGlobal';
 import { NATURAL_EVENTS } from '@/app/helper/constant';
 import React, { useState } from 'react';
 import * as m from 'motion/react-m';
+import { useChat } from '@ai-sdk/react';
 
 function NaturalEventSelect({ toolCallId }: { toolCallId: string }) {
-  const { addToolResult } = useChatGlobal();
+  const { addToolResult } = useChat({
+    id: 'chat',
+    maxSteps: 5
+  });
   const [selected, setSelected] = useState<string | null>('');
   const selectType = (type: string) => {
     if (!selected) {
