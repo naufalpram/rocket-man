@@ -15,13 +15,8 @@ const MemoizedEONETResult = memo(({ toolCallId, result }: { toolCallId: string; 
   <EONETResult key={toolCallId} result={result as GlobeDataArrayResponse} />
 ));
 
-const MemoizedNaturalEventSelect = memo(({ toolCallId }: { toolCallId: string }) => (
-  <NaturalEventSelect key={toolCallId} toolCallId={toolCallId} />
-));
-
 MemoizedAPODResult.displayName = 'MemoizedAPODResult';
 MemoizedEONETResult.displayName = 'MemoizedEONETResult';
-MemoizedNaturalEventSelect.displayName = 'MemoizedNaturalEventSelect';
 
 const MultiModalResult = memo(({ toolInvocation }: { toolInvocation: ToolInvocation }) => {
   if (toolInvocation) {
@@ -32,7 +27,7 @@ const MultiModalResult = memo(({ toolInvocation }: { toolInvocation: ToolInvocat
       case 'naturalEventsShowcase':
         return <MemoizedEONETResult toolCallId={toolInvocation.toolCallId} result={isResult ? toolInvocation.result : null} />;
       case 'getNaturalEventType':
-        return <MemoizedNaturalEventSelect toolCallId={toolInvocation.toolCallId} />;
+        return <NaturalEventSelect key={toolInvocation.toolCallId} toolCallId={toolInvocation.toolCallId} />;
       default:
         return null;
     }
