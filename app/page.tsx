@@ -114,7 +114,7 @@ const UserPrompt = () => {
   )
 }
 
-export default function Home() {
+export default function Home() {  
   const { messages } = useChat({
     id: 'chat',
     maxSteps: 5

@@ -6,16 +6,21 @@ import {
   fetchEONET,
   getNaturalEventType
 } from './nasa-api';
+import { getDefaultParamValue, getRemoteConfig } from '@/lib/firebaseAdmin';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
+  // Access the remote config
+  const remoteConfig = await getRemoteConfig();
+  const modelName = getDefaultParamValue(remoteConfig, 'model_name', 'gemini-1.5-flash-latest');
+  const systemMessage = getDefaultParamValue(remoteConfig, 'system_message', 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy.');
   const { messages } = await req.json();
 
   const result = streamText({
-    model: google('gemini-1.5-flash-latest'),
-    system: 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy. You can still add your knowledge on everything, not just on astronomy.',
+    model: google(modelName),
+    system: systemMessage,
     messages,
     experimental_transform: smoothStream(),
     experimental_activeTools: ['astronomyPictureOfTheDay', 'getNaturalEventType', 'naturalEventsShowcase'],
