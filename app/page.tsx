@@ -5,8 +5,7 @@ import { KeyboardEventHandler, useCallback, useEffect, useRef, memo } from 'reac
 import Link from 'next/link';
 import MultiModalResult from './components/multi-modal-bubble';
 import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
-import * as m from 'motion/react-m'
-import LoadingIndicator from './components/loading-multi-modal/LoadingIndicator';
+import * as m from 'motion/react-m';
 import { useChat } from '@ai-sdk/react';
 import MemoizedMarkdown from './components/memoized-markdown';
 
@@ -60,18 +59,15 @@ const ChatStatus = memo(() => {
     id: 'chat',
     maxSteps: 5
   });
-  
-  if (status === 'submitted') {
-    return <TypingIndicator />;
-  }
-  return null;
+
+  return status === 'submitted' && <TypingIndicator />;
 });
 
 ChatStatus.displayName = 'ChatStatus';
 
 const UserPrompt = () => {
   const promptRef = useRef<HTMLInputElement>(null);
-  const { status, append } = useChat({
+  const { status, append, stop } = useChat({
     id: 'chat',
     maxSteps: 5
   });
@@ -83,24 +79,36 @@ const UserPrompt = () => {
     transitionLoading: { y: 0, opacity: 1 }
   };
   const handleEnter: KeyboardEventHandler = useCallback((e) => {
-    if (e.key === 'Enter' && promptRef.current) {
+    if (e.key === 'Enter' && promptRef.current && promptRef.current.value !== '') {
       append({ role: 'user', content: promptRef.current.value});
       promptRef.current.value = '';
     }
   }, [append]);
 
   const handleSubmit = useCallback(() => {
-    if (promptRef.current) {
+    if (status === 'submitted' || status === 'streaming') {
+      stop();
+      return;
+    };
+    if (promptRef.current && promptRef.current.value !== '') {
       append({ role: 'user', content: promptRef.current.value })
       promptRef.current.value = '';
     }
-  }, [append]);
+  }, [append, status, stop]);
+
+  useEffect(() => {
+    if (status === 'ready') promptRef.current?.focus();
+  }, [status]);
   return (
     <>
     <input ref={promptRef} disabled={status === 'submitted'} onKeyUp={handleEnter} className="w-full h-10 py-6 px-8 bg-[#232037] text-white border border-white/30 rounded-lg" placeholder="Ask Rocket Man about anything!" name="prompt" />
-    <button disabled={status === 'submitted' || status === 'streaming'} id='submit-btn' className="text-white bg-transparent px-4 py-2 min-w-[85px] flex justify-center items-center" onClick={handleSubmit}>
-      {(status === 'ready' || status === 'error') && <m.span variants={submitButtonVariant} initial={['baseSubmit', 'transitionSubmit']} animate='baseSubmit' exit='transitionSubmit'>Submit</m.span>}
-      {(status === 'submitted' || status === 'streaming') && <m.span variants={submitButtonVariant} initial='baseLoading' animate='transitionLoading' exit='baseLoading'><LoadingIndicator size='sm' /></m.span>}
+    <button id='submit-btn' className="text-white bg-transparent px-4 py-2 min-w-[85px] flex justify-center items-center" onClick={handleSubmit}>
+      {(status === 'ready' || status === 'error') && (
+        <m.span variants={submitButtonVariant} initial={['baseSubmit', 'transitionSubmit']} animate='baseSubmit' exit='transitionSubmit'>Submit</m.span>
+      )}
+      {(status === 'submitted' || status === 'streaming') && (
+        <m.span variants={submitButtonVariant} initial='baseLoading' animate='transitionLoading' exit='baseLoading'>Stop</m.span>
+      )}
     </button>
     </>
   )

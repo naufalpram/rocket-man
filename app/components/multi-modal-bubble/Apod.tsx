@@ -17,7 +17,6 @@ type SuccessfulAPODResponse = {
   url: string;
 };
 
-// Memoized media component to prevent re-renders
 const APODMedia = memo(({ result }: { result: SuccessfulAPODResponse }) => {
   const renderMedia = useCallback((mediaType: string) => {
     switch (mediaType) {
