@@ -25,13 +25,23 @@ const fetchAPOD = tool({
     },
 });
 
+/**
+ * Get list of natural event types
+ * @param {string} message The message to show the user.
+ * @return {void} This function doesn't return anything, it's used to show UI options.
+ */
 const getNaturalEventType = tool({
   description: 'Show the user a list of natural event types to choose.',
   parameters: z.object({
     message: z.string().describe(`The message to show the user a list of natural event types to choose`)
   })
 })
-
+/**
+ * Fetch natural events data from NASA EONET API
+ * @param {number} days The number of prior days (including today) from which natural events will be returned
+ * @param {string} eventType The type of natural event to filter by
+ * @return {Promise<GlobeDataArrayResponse>} Filtered and formatted natural events data for globe visualization
+ */
 const fetchEONET = tool({
   description: `Showcase Nasa\'s currently occuring natural events data in the last requested days, provided by the user. Show the user the natural event types to choose first and then use the answer. End it with your witty analysis on the data`,
   parameters: z.object({
