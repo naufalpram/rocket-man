@@ -1,5 +1,4 @@
 import admin from 'firebase-admin';
-import { RemoteConfigParameter } from 'firebase-admin/remote-config';
 
 // Check if Firebase Admin SDK is already initialized
 if (!admin.apps.length) {
@@ -18,27 +17,15 @@ if (!admin.apps.length) {
   }
 }
 
-const getRemoteConfig = async () => {
+const getServerConfig = async () => {
     try {
       const remoteConfig = admin.remoteConfig();
-      const template = await remoteConfig.getTemplate();
-      return template.parameters; // or the entire template if needed
+      const template = await remoteConfig.getServerTemplate();
+      return template.evaluate(); // or the entire template if needed
     } catch (error) {
-      console.error('Error fetching Remote Config:', error);
+      console.error('Error fetching Server Config:', error);
       return null;
     }
 }
 
-type RemoteConfigParameters =  {
-    [key: string]: RemoteConfigParameter;
-} | null
-
-const getDefaultParamValue = (parameters: RemoteConfigParameters, key: string, fallbackValue: string) => {
-    if (parameters) {
-        const param = parameters?.[key];
-        return param?.defaultValue && 'value' in param?.defaultValue ? param.defaultValue.value : fallbackValue;
-    }
-    return fallbackValue
-}
-
-export { admin, getRemoteConfig, getDefaultParamValue };
+export { admin, getServerConfig };

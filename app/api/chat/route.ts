@@ -6,16 +6,17 @@ import {
   fetchEONET,
   getNaturalEventType
 } from './nasa-api';
-import { getDefaultParamValue, getRemoteConfig } from '@/lib/firebaseAdmin';
+import { getServerConfig } from '@/lib/firebaseAdmin';
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  // Access the remote config
-  const remoteConfig = await getRemoteConfig();
-  const modelName = getDefaultParamValue(remoteConfig, 'model_name', 'gemini-1.5-flash-latest');
-  const systemMessage = getDefaultParamValue(remoteConfig, 'system_message', 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy.');
+  // Access the server config
+  const serverConfig = await getServerConfig();
+  const modelName = serverConfig?.getString('model_name') ?? 'gemini-1.5-flash-latest';
+  const systemMessage = serverConfig?.getString('system_message') ?? 'You only answer in slang based on the language of the user\'s prompt. You\'re cool and has interest in astronomy.';
+
   const { messages } = await req.json();
 
   const result = streamText({
