@@ -8,6 +8,7 @@ import { AnimatePresence, LazyMotion, domAnimation } from 'motion/react';
 import * as m from 'motion/react-m';
 import { useChat } from '@ai-sdk/react';
 import MemoizedMarkdown from './components/memoized-markdown';
+import { useScrollToBottom } from './hooks/useScrollToBottom';
 
 const MessageParts = memo(({ parts }: { parts: Message['parts'] }) => {
   return (
@@ -120,14 +121,7 @@ export default function Home() {
     maxSteps: 5
   });
 
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const element = containerRef.current;
-    if (element) {
-      element.scrollTop = element.scrollHeight;
-    }
-  }, [messages]);
+  const containerRef = useScrollToBottom<HTMLDivElement>(messages);
 
   return (
     <LazyMotion features={domAnimation}>

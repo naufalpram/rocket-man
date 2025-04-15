@@ -1,4 +1,4 @@
-import { ChatGlobalProvider } from "@/app/context/useChatGlobal"
+import { ChatGlobalProvider } from "@/app/hooks/useChatGlobal"
 import { render, RenderOptions } from "@testing-library/react";
 import { PropsWithChildren, ReactNode } from "react";
 

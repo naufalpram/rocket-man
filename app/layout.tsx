@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { ChatGlobalProvider } from "./context/useChatGlobal";
+import { ChatGlobalProvider } from "./hooks/useChatGlobal";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
