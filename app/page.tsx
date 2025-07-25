@@ -77,7 +77,7 @@ export default function Home() {
           <li>Chat about anything with this super awesome Rocket Man! {"(he loves astronomy)"}</li>
         </ol>
         <section ref={containerRef} className="w-full bg-[#16132b] p-8 flex flex-col gap-4 h-[550px] overflow-y-scroll chat-room rounded-lg">
-          {(!messages || messages?.length === 0) && <span className='text-gray-500 font-medium self-center mt-20'>Start chatting with Rocket Man!</span>}
+          {(!messages || messages?.length === 0) && <InitialChatDisplay />}
           {messages.map((message, idx) => (
             <ResultParser key={idx} message={message} isLastMessage={idx === messages.length - 1} />
           ))}
@@ -107,4 +107,43 @@ export default function Home() {
     </div>
     </LazyMotion>
   );
+}
+
+interface TemplatePrompts {
+  label: string;
+  description: string;
+  prompt: string;
+};
+
+const templatePrompts: TemplatePrompts[] = [
+  {
+    label: "Get Me NASA APOD!",
+    description: "Ask about NASA Astronomy Pic of the Day!",
+    prompt: "Hey i'm curious about NASA pic of the day"
+  },
+  {
+    label: "What's Up with Natural Events?",
+    description: "Ask to show some Natural Events data!",
+    prompt: "Hey can you show me some natural events?"
+  }
+]
+
+const InitialChatDisplay = () => {
+  const { append } = useChat({ id: 'chat', maxSteps: 5 });
+  const handleSubmitTemplate = (prompt: string) => {
+    append({ role: 'user', content: prompt });
+  }
+  return (
+    <div className="self-center my-auto text-gray-500 flex flex-col gap-3 justify-center">
+      <span className='font-semibold text-3xl text-center'>Start chatting with Rocket Man!</span>
+      <menu className="flex gap-4">
+        {templatePrompts.map((template, idx) => (
+          <button key={idx} onClick={() => handleSubmitTemplate(template.prompt)} className="px-4 py-3 bg-[#16132b] border border-gray-500 rounded-lg text-start hover:bg-[#0a0a0a]/50 transition-colors duration-300">
+            <h4 className="font-semibold text-[#fe754d]">{template.label}</h4>
+            <p className="text-sm">{template.description}</p>
+          </button>
+        ))}
+      </menu>
+    </div>
+  )
 }
