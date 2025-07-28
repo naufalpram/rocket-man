@@ -124,7 +124,7 @@ const templatePrompts: TemplatePrompts[] = [
   {
     label: "What's Up with Natural Events?",
     description: "Ask to show some Natural Events data!",
-    prompt: "Hey can you show me some natural events?"
+    prompt: "Hey can you show me some natural events? Can you give me the options?"
   }
 ]
 
